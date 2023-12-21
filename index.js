@@ -47,7 +47,7 @@ app.get('/twitter', (req, res) => {
     res.send('Twitter')
 })
 
-app.get('/github', (req, res) => {
+app.get('/api/github', (req, res) => {
     res.json(gitData)
 })
 
