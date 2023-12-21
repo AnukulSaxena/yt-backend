@@ -1,9 +1,21 @@
 require('dotenv').config()
 const express = require('express')
-
+const cors = require('cors')
 
 const app = express()
+
+const corsOptions = {
+    origin: 'https://movietrakker.netlify.app/', // Allow requests from any origin
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+// Enable CORS for all routes
+app.use(cors(corsOptions));
+
+
+
 const port = process.env.PORT || 4000
+
 const gitData = {
     "login": "AnukulSaxena",
     "id": 101214911,
