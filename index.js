@@ -5,7 +5,7 @@ const cors = require('cors')
 const app = express()
 
 const corsOptions = {
-    origin: 'https://movietrakker.netlify.app/', // Allow requests from any origin
+    origin: '*', // Allow requests from any origin
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
