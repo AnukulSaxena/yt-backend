@@ -3,14 +3,20 @@
   "version": "1.0.0",
   "description": "my web server",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules index.js"
   },
   "author": "anukul prakash saxena",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "prettier": "^3.1.1"
   }
 }
