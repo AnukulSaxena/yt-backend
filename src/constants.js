@@ -1,1 +1,1 @@
-export const DB_NAME = "movietrakker"
+export const DB_NAME = "moviesDB"
