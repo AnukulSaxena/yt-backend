@@ -40,20 +40,22 @@ const addWatchedMovie = asyncHandler(async (req, res) => {
 });
 
 const deleteWatchedMovie = asyncHandler(async (req, res) => {
-    const movieId = req.params.id;
-    try {
-        const result = await WatchedMovie.deleteOne({ _id: movieId });
+    const { user_id, id } = req.params;
 
-        if (result.deletedCount === 1) {
-            res.status(200).json({ success: true, message: `WatchedMovie with _id ${movieId} deleted successfully` });
+    try {
+        const result = await WatchedMovie.deleteOne({ user_id, id });
+
+        if (result.deletedCount >= 1) {
+            res.status(200).json({ success: true, message: `WatchedMovie with id ${id} for user_id ${user_id} deleted successfully` });
         } else {
-            res.status(404).json({ success: false, error: `WatchedMovie with _id ${movieId} not found` });
+            res.status(404).json({ success: false, error: `WatchedMovie with id ${id} for user_id ${user_id} not found` });
         }
     } catch (error) {
         console.error("Error deleting WatchedMovie:", error);
         res.status(500).json({ success: false, error: "Server Error" });
     }
 });
+
 
 
 export { addWatchedMovie, deleteWatchedMovie, getWatchedMovies };
