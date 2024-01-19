@@ -20,24 +20,31 @@ const getWatchedMovies = asyncHandler(async (req, res) => {
 });
 
 const addWatchedMovie = asyncHandler(async (req, res) => {
-
     const { title, user_id, poster_path, id } = req.body;
-    const newWatchedMovie = new WatchedMovie({
-        title,
-        user_id,
-        poster_path,
-        id,
-    });
 
     try {
-        await newWatchedMovie.save();
+        const existingMovie = await WatchedMovie.findOne({ id, user_id });
 
-        res.status(201).json({ success: true, data: newWatchedMovie });
+        if (existingMovie) {
+            res.status(201).json({ success: true, data: existingMovie });
+        } else {
+            const newWatchedMovie = new WatchedMovie({
+                title,
+                user_id,
+                poster_path,
+                id,
+            });
+
+            await newWatchedMovie.save();
+
+            res.status(201).json({ success: true, data: newWatchedMovie });
+        }
     } catch (error) {
         console.error("Error adding WatchedMovie:", error);
         res.status(500).json({ success: false, error: "Server Error" });
     }
 });
+
 
 const deleteWatchedMovie = asyncHandler(async (req, res) => {
     const { user_id, id } = req.params;
