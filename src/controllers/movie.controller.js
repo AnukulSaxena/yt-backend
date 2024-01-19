@@ -41,9 +41,8 @@ const addWatchedMovie = asyncHandler(async (req, res) => {
 
 const deleteWatchedMovie = asyncHandler(async (req, res) => {
     const { user_id, id } = req.params;
-
     try {
-        const result = await WatchedMovie.deleteOne({ user_id, id });
+        const result = await WatchedMovie.deleteMany({ user_id, id });
 
         if (result.deletedCount >= 1) {
             res.status(200).json({ success: true, message: `WatchedMovie with id ${id} for user_id ${user_id} deleted successfully` });
@@ -56,6 +55,34 @@ const deleteWatchedMovie = asyncHandler(async (req, res) => {
     }
 });
 
+const getPaginateWatchedMovies = asyncHandler(async (req, res) => {
+    try {
+        const { user_id, page, pageSize } = req.params;
+
+        const pageNumber = parseInt(page, 10) || 1;
+        const limit = parseInt(pageSize, 10) || 10;
+
+        const skip = (pageNumber - 1) * limit;
+
+        const watchedMovies = await WatchedMovie.find({ user_id })
+            .skip(skip)
+            .limit(limit);
+
+        const totalCount = await WatchedMovie.countDocuments({ user_id });
+
+        res.status(200).json({
+            success: true,
+            data: watchedMovies,
+            totalCount,
+        });
+    } catch (error) {
+        console.error("Error fetching watched movies:", error);
+        res.status(500).json({
+            success: false,
+            error: "Server Error",
+        });
+    }
+});
 
 
-export { addWatchedMovie, deleteWatchedMovie, getWatchedMovies };
+export { addWatchedMovie, deleteWatchedMovie, getWatchedMovies, getPaginateWatchedMovies };
