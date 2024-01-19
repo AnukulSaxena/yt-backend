@@ -12,5 +12,25 @@ const movieSchema = new mongoose.Schema({
     Poster_Url: String
 });
 
+const watchedMovieSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true,
+    },
+    user_id: {
+        type: String,
+        required: true,
+    },
+    poster_path: {
+        type: String,
+        required: true,
+    },
+    id: {
+        type: Number,
+        required: true,
+    },
+});
+
+export const WatchedMovie = mongoose.model("WatchedMovie", watchedMovieSchema);
 export const Movie = mongoose.model("Movie", movieSchema);
 export const Mymovie = mongoose.model("Mymovie", movieSchema);

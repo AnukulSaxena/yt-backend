@@ -20,13 +20,17 @@ app.use(cookieParser())
 //routes import
 
 import movieRouter from './routes/movie.routes.js'
+import userRouter from './routes/user.routes.js';
 
-// routes declaration
+
+// movie routes declaration
+//app.use("/api/v1/movie", movieRouter)
+// app.get('/', (req, res) => {
+//     res.send("hello")
+// })
+
+// User routes declaration
+app.use("/api/v1/users", userRouter)
 app.use("/api/v1/movie", movieRouter)
-app.get('/', (req, res) => {
-    res.send("hello")
-})
-
-
 
 export { app }

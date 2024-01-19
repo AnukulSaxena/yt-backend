@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { getUnwatchedMovies } from "../controllers/movie.controller.js";
+import { addWatchedMovie, deleteWatchedMovie, getWatchedMovies } from "../controllers/movie.controller.js";
 
 const router = Router()
 
-router.route("/unwatched").post(getUnwatchedMovies)
+router.route("/watched/add").post(addWatchedMovie)
+router.route("/watched/delete/:id").delete(deleteWatchedMovie);
+router.route("/watched/getall/:user_id").get(getWatchedMovies);
+
+
 
 export default router
