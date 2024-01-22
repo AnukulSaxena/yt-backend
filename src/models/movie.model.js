@@ -29,6 +29,10 @@ const watchedMovieSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    vote_average:{
+        type: Number,
+        required: true,
+    }
 });
 
 export const WatchedMovie = mongoose.model("WatchedMovie", watchedMovieSchema);

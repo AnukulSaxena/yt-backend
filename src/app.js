@@ -21,6 +21,7 @@ app.use(cookieParser())
 
 import movieRouter from './routes/movie.routes.js'
 import userRouter from './routes/user.routes.js';
+import tvRouter from './routes/tv.routes.js'
 
 
 // movie routes declaration
@@ -32,5 +33,6 @@ import userRouter from './routes/user.routes.js';
 // User routes declaration
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/movie", movieRouter)
+app.use("/api/v1/tv", tvRouter)
 
 export { app }
