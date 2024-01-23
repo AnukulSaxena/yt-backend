@@ -26,9 +26,9 @@ import tvRouter from './routes/tv.routes.js'
 
 // movie routes declaration
 //app.use("/api/v1/movie", movieRouter)
-// app.get('/', (req, res) => {
-//     res.send("hello")
-// })
+ app.get('/', (req, res) => {
+     res.send("hello")
+ })
 
 // User routes declaration
 app.use("/api/v1/users", userRouter)
