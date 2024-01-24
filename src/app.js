@@ -5,7 +5,7 @@ import cors from 'cors'
 const app = express()
 
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN, // Allow requests from any origin
+    origin: "*", // Allow requests from any origin
     credentials: true,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
