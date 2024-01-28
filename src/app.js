@@ -22,7 +22,7 @@ app.use(cookieParser())
 import movieRouter from './routes/movie.routes.js'
 import userRouter from './routes/user.routes.js';
 import tvRouter from './routes/tv.routes.js'
-
+import videoRouter from './routes/video.routes.js'
 
 // movie routes declaration
 //app.use("/api/v1/movie", movieRouter)
@@ -32,6 +32,9 @@ app.get('/', (req, res) => {
 
 // User routes declaration
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/videos", videoRouter)
+
+
 app.use("/api/v1/movie", movieRouter)
 app.use("/api/v1/tv", tvRouter)
 
