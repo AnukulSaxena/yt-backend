@@ -27,7 +27,6 @@ const uploadOnCloudinary = async (localFilePath) => {
 
 async function deleteFileOnCloudinary(fileUrl) {
     try {
-        // console.log("cloudinary :: deleteFileOnCloudinary :: FileUrl", fileUrl)
         if (!fileUrl?.trim()) return
         const publicId = fileUrl.split("/").pop().split(".")[0];
         console.log(publicId)
@@ -35,12 +34,12 @@ async function deleteFileOnCloudinary(fileUrl) {
 
         console.log(result);
         if (result.result === 'ok') {
-            console.log('Image deleted successfully.');
+            console.log('File deleted successfully.');
         } else {
-            console.error('Failed to delete the image.');
+            console.error('Failed to delete the File.');
         }
     } catch (error) {
-        console.error('Error deleting image:', error.message);
+        console.error('Error deleting File:', error.message);
     }
 }
 
