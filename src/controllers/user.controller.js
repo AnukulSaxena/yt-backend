@@ -24,27 +24,33 @@ const generateAccessAndRefreshToken = async (user_id) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { fullName, username, email, password, } = req.body;
     if ([fullName, username, email, password].some((field) => (
-        field.trim() === ""
+        field?.trim() === ""
     ))) {
         throw new ApiError(400, "All fields are required")
     }
 
+
     const existedUser = await User.findOne({
         $or: [{ email }, { username }]
     })
+
     if (existedUser) {
         console.log(existedUser)
         throw new ApiError(409, "User with email or username already existed")
     }
-    const avatarLocalPath = req.files?.avatar[0]?.path;
 
-    if (!avatarLocalPath) {
+    if (!req?.files.avatar) {
         throw new ApiError(400, "Avatar file is required")
+    }
+    const avatarLocalPath = req?.files?.avatar[0]?.path;
+
+    if (!avatarLocalPath && !req.files.avatar[0].mimetype.includes('image')) {
+        throw new ApiError(400, "Avatar file is required or Invalid file Type")
     }
 
     let coverImageLocalPath;
-    if (req.files && Array.isArray(req.files?.coverImage) && req.files.coverImage.length > 0) {
-        coverImageLocalPath = req.files.coverImage[0].path
+    if (req?.files && Array.isArray(req?.files?.coverImage) && req?.files?.coverImage?.length > 0) {
+        coverImageLocalPath = req?.files?.coverImage[0]?.path
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
@@ -63,16 +69,16 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImage?.url || ""
     })
 
-    const userCreated = await User.findById(user._id)
-        .select("-password -refreshToken")
+    // const userCreated = await User.findById(user._id)
+    //     .select("-password -refreshToken")
 
 
 
-    if (!userCreated) {
-        throw new ApiError(500, "Something went wrong while user creation")
-    }
+    // if (!userCreated) {
+    //     throw new ApiError(500, "Something went wrong while user creation")
+    // }
     res.status(201).json(
-        new ApiResponse(200, userCreated, "User created Successfully")
+        new ApiResponse(200, user, "User created Successfully")
     )
 
 })
@@ -258,8 +264,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     // console.log(" UserControlle :: updateUserAv :: req.user", req.user)
     const avatarLocalPath = req.file?.path
 
-    if (!avatarLocalPath) {
-        throw new ApiError(400, "Avatar file is missing")
+    if (!avatarLocalPath || !req.files?.avatar[0]?.mimetype.includes('image')) {
+        throw new ApiError(400, "Avatar file is required or Invalid file Type")
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
@@ -291,8 +297,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 const updateUserCoverImage = asyncHandler(async (req, res) => {
     const coverImageLocalPath = req.file?.path
 
-    if (!coverImageLocalPath) {
-        throw new ApiError(400, "Cover image file is missing")
+    if (!coverImageLocalPath || !req.files?.coverImage[0]?.mimetype.includes('image')) {
+        throw new ApiError(400, "coverImage file is required or Invalid file Type")
     }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
