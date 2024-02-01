@@ -29,6 +29,7 @@ import likeRouter from './routes/like.routes.js'
 import subscriptionRouter from './routes/subscription.routes.js'
 import playlistRouter from './routes/playlist.routes.js'
 import healthcheckRouter from './routes/healthcheck.routes.js'
+import errorHandler from './middlewares/errorHandler.middleware.js';
 // movie routes declaration
 //app.use("/api/v1/movie", movieRouter)
 app.get('/', (req, res) => {
@@ -49,4 +50,6 @@ app.use("/api/v1/healthcheck", healthcheckRouter)
 app.use("/api/v1/movie", movieRouter)
 app.use("/api/v1/tv", tvRouter)
 
+
+app.use(errorHandler);
 export { app }

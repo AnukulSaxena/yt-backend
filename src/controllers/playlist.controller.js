@@ -73,11 +73,9 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
             throw new ApiError(400, 'Playlist not found')
         }
 
-
         if (!mongoose.Types.ObjectId.isValid(videoId)) {
             throw new ApiError(400, 'Invalid videoId')
         }
-
 
         const video = await Video.findById(videoId);
 
