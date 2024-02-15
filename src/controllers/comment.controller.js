@@ -25,8 +25,36 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
     const comments = await Comment.aggregate([
         {
-            '$match': {
-                'video': new mongoose.Types.ObjectId(videoId)
+            $match: {
+                video: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'ownerDetails'
+            }
+        },
+        {
+            $unwind: '$ownerDetails'
+        },
+        {
+            $lookup: {
+                from: 'likes',
+                localField: '_id',
+                foreignField: 'comment',
+                as: 'likeDetails'
+            }
+        },
+        {
+            $project: {
+                'content': 1,
+                'createdAt': 1,
+                'owner_avatar': '$ownerDetails.avatar',
+                'owner_username': '$ownerDetails.username',
+                'numberOfLikes': { $size: "$likeDetails" }
             }
         },
         {
@@ -35,6 +63,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
         {
             $limit: limit
         }
+
     ])
 
     if (!comments) {
@@ -60,7 +89,6 @@ const addComment = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new ApiError(400, "Invalid videoId")
     }
-    console.log(1)
     if (!video) {
         throw new ApiError(400, "Video not found")
     }
@@ -69,7 +97,7 @@ const addComment = asyncHandler(async (req, res) => {
     const comment = await Comment.create({
         content,
         video: videoId,
-        owner: mongoose.Types.ObjectId(user._id)
+        owner: user._id
     })
     if (!comment) {
         throw new ApiError(400, "Something went wrong during comment creation")
