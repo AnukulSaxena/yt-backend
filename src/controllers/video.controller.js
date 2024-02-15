@@ -9,10 +9,6 @@ import { deleteFileOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.
 
 const publishAVideo = asyncHandler(async (req, res) => {
 
-    // userAuthentication
-    // valididation for all required stuff from user
-
-
     const { title, description } = req.body;
     if ([title, description].some((field) => (
         field.trim() === ""
@@ -20,7 +16,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required")
     }
 
-    console.log(req.files);
+    // console.log(req.user);
 
     const videoLocalPath = req.files?.videoFile[0]?.path;
     const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
@@ -49,7 +45,9 @@ const publishAVideo = asyncHandler(async (req, res) => {
         title,
         description,
         duration,
-        owner: req.user
+        owner: req.user,
+        ownerName: req.user.fullName,
+        ownerAvatar: req.user.avatar
 
     })
 
@@ -61,8 +59,9 @@ const publishAVideo = asyncHandler(async (req, res) => {
 })
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    let { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
 
+    let { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+    console.log(userId)
     try {
         await User.findById(userId)
     } catch (error) {
@@ -99,6 +98,37 @@ const getAllVideos = asyncHandler(async (req, res) => {
     );
 });
 
+const getAllVideosCount = asyncHandler(async (req, res) => {
+    let { userId } = req.query;
+
+    try {
+        await User.findById(userId)
+    } catch (error) {
+        throw new ApiError(400, "Invalid userId")
+    }
+
+
+    const pipeline =
+        [
+            {
+                '$match': {
+                    'owner': new mongoose.Types.ObjectId('65c8988cfc69fb27cd793685')
+                }
+            }, {
+                '$count': 'TotalVideos'
+            }
+        ]
+        ;
+
+
+    const videos = await Video.aggregate(pipeline);
+
+
+    res.status(200).json(
+        new ApiResponse(200, videos, "Video Count fetched successfully")
+    );
+});
+
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     let video;
@@ -111,6 +141,9 @@ const getVideoById = asyncHandler(async (req, res) => {
     if (!video) {
         throw new ApiError(400, "Video does not exist")
     }
+
+    video.views += 1;
+    await video.save();
 
     res.status(200).json(
         new ApiResponse(200, video, "Video fetched successfully")
@@ -231,5 +264,6 @@ export {
     getVideoById,
     updateVideo,
     deleteVideo,
-    togglePublishStatus
+    togglePublishStatus,
+    getAllVideosCount
 }

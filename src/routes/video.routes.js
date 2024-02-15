@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
     deleteVideo,
     getAllVideos,
+    getAllVideosCount,
     getVideoById,
     publishAVideo,
     togglePublishStatus,
@@ -13,6 +14,7 @@ import { upload } from "../middlewares/multer.middleware.js"
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
+router.route("/count").get(getAllVideosCount)
 router
     .route("/")
     .get(getAllVideos)

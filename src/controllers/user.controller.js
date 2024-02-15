@@ -28,6 +28,7 @@ const registerUser = asyncHandler(async (req, res) => {
     ))) {
         throw new ApiError(400, "All fields are required")
     }
+    console.log(req.files)
 
 
     const existedUser = await User.findOne({
@@ -39,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email or username already existed")
     }
 
-    if (!req?.files.avatar) {
+    if (!req?.files?.avatar) {
         throw new ApiError(400, "Avatar file is required")
     }
     const avatarLocalPath = req?.files?.avatar[0]?.path;
@@ -87,6 +88,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!username && !email) {
         throw new ApiError(400, "Username or email is required")
     }
+    console.log("User Logged in", username, email)
 
     const user = await User.findOne({
         $or: [{ username }, { email }]
@@ -110,6 +112,7 @@ const loginUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true
     }
+    console.log("response")
 
     res
         .status(200)
@@ -225,6 +228,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
+    console.log(req.user)
     res
         .status(200)
         .json(new ApiResponse(

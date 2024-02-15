@@ -1,7 +1,6 @@
 //require('dotenv').config()
 import dotenv from 'dotenv'
 
-import express from "express"
 import connectDB from "./src/db/index.js";
 import { app } from './src/app.js'
 

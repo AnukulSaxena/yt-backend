@@ -5,7 +5,7 @@ import cors from 'cors'
 const app = express()
 
 const corsOptions = {
-    origin: "*", // Allow requests from any origin
+    origin: ['http://localhost:5173'],
     credentials: true,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -28,6 +28,11 @@ import subscriptionRouter from './routes/subscription.routes.js'
 import playlistRouter from './routes/playlist.routes.js'
 import healthcheckRouter from './routes/healthcheck.routes.js'
 import errorHandler from './middlewares/errorHandler.middleware.js';
+
+
+// app.get('/', (req, res) => {
+//     res.send('sdfskdj')
+// })
 
 
 // User routes declaration

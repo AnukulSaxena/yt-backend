@@ -6,7 +6,6 @@ const storage = multer.diskStorage({
     },
 
     filename: function (req, file, cb) {
-        console.log("multer midware :: filename :: file", file)
         cb(null, file.originalname)
     }
 })
