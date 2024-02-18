@@ -76,6 +76,28 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     )
 })
 
+const getUserChannelSubscribersCount = asyncHandler(async (req, res) => {
+    const { channelId } = req.params;
+
+    let channels;
+    try {
+        channels = await Subscription.find({
+            channel: channelId
+        })
+    } catch (error) {
+        throw new ApiError(400, "Invalid ChannelId")
+    }
+
+    const isSubscribed = channels.some(item => String(item.subscriber) === String(req.user._id))
+
+    res.status(200).json(
+        new ApiResponse(200, {
+            length: channels?.length,
+            isSubscribed
+        }, "Channel subscribers fetched successfully")
+    )
+})
+
 const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { user } = req;
 
@@ -113,5 +135,6 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
 export {
     toggleSubscription,
     getUserChannelSubscribers,
-    getSubscribedChannels
+    getSubscribedChannels,
+    getUserChannelSubscribersCount
 }
