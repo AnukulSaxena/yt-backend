@@ -5,6 +5,7 @@ import {
     getAllVideosCount,
     getVideoById,
     publishAVideo,
+    testVideoController,
     togglePublishStatus,
     updateVideo,
 } from "../controllers/video.controller.js"
@@ -40,5 +41,6 @@ router
     .patch(upload.single("thumbnail"), updateVideo);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+router.route("/test/:videoId").get(testVideoController);
 
 export default router

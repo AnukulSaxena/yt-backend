@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose"
+import mongoose, { isValidObjectId, mongo } from "mongoose"
 import { Video } from "../models/video.model.js"
 import { User } from "../models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
@@ -79,6 +79,28 @@ const getAllVideos = asyncHandler(async (req, res) => {
                 title: { $regex: new RegExp(query?.trim().split(/\s+/).join('|'), 'i') }
             },
         },
+        {
+            $lookup: {
+                'from': 'users',
+                'localField': 'owner',
+                'foreignField': '_id',
+                'as': 'videoOwner'
+            }
+        }, {
+            '$unwind': '$videoOwner'
+        }, {
+            '$project': {
+                '_id': 1,
+                'title': 1,
+                'views': 1,
+                'videoFile': 1,
+                'createdAt': 1,
+                'thumbnail': 1,
+                'ownerName': '$videoOwner.fullName',
+                'ownerId': '$videoOwner._id',
+                'ownerAvatar': '$videoOwner.avatar'
+            }
+        },
         sortBy ? { $sort: { [sortBy]: sortType === 'desc' ? -1 : 1 } } : undefined,
         {
             $skip: (page - 1) * limit
@@ -134,6 +156,10 @@ const getVideoById = asyncHandler(async (req, res) => {
     let video;
     try {
         video = await Video.findById(videoId)
+            .populate({
+                path: 'owner',
+                select: '_id username fullName avatar coverImage'
+            })
     } catch (error) {
         throw new ApiError(400, "Invalid videoId ")
     }
@@ -258,7 +284,27 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
 })
 
+const testVideoController = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    const response = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
+        }
+    ])
+    console.log(response)
+    if (!response?.length) {
+        throw new ApiError(400, "Something went wrong")
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, response, 'sucees')
+    )
+})
+
 export {
+    testVideoController,
     getAllVideos,
     publishAVideo,
     getVideoById,

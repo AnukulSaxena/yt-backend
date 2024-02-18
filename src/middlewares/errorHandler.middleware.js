@@ -7,6 +7,7 @@ export default function errorHandler(err, req, res, next) {
 
     console.error(err);
     res.status(statusCode).json({
+        "something": 'sdoifj',
         status: statusCode,
         error: err.name || 'ServerError',
         message: err.message || 'Internal Server Error',
