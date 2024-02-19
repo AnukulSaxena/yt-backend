@@ -134,9 +134,30 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     )
 })
 
+const getVideoInfo = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    const { user } = req;
+
+    const likedVideos = await Like.find({
+        video: videoId
+    })
+    const isLiked = likedVideos.some(item => String(item.likedBy) === String(req.user._id))
+
+    if (!likedVideos) {
+        throw new ApiError(400, "Liked videos not found")
+    }
+    res.status(200).json(
+        new ApiResponse(200, {
+            isLiked,
+            likeCount: likedVideos.length
+        }, "Liked videos fetched successfully")
+    )
+})
+
 export {
     toggleCommentLike,
     toggleTweetLike,
     toggleVideoLike,
-    getLikedVideos
+    getLikedVideos,
+    getVideoInfo
 }
