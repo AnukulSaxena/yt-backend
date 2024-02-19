@@ -3,6 +3,7 @@ import {
     deleteVideo,
     getAllVideos,
     getAllVideosCount,
+    getSubscriptionVideos,
     getVideoById,
     publishAVideo,
     testVideoController,
@@ -42,5 +43,7 @@ router
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
 router.route("/test/:videoId").get(testVideoController);
+
+router.route("/user/subscriptions").get(getSubscriptionVideos)
 
 export default router

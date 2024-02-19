@@ -5,7 +5,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { deleteFileOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js"
-
+import { Subscription } from "../models/subscription.model.js"
 
 const publishAVideo = asyncHandler(async (req, res) => {
 
@@ -61,7 +61,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getAllVideos = asyncHandler(async (req, res) => {
 
     let { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
-    console.log(userId)
+    console.log(userId, "GetAllVideos")
     try {
         await User.findById(userId)
     } catch (error) {
@@ -118,6 +118,71 @@ const getAllVideos = asyncHandler(async (req, res) => {
     res.status(200).json(
         new ApiResponse(200, videos, "Videos fetched successfully")
     );
+});
+
+const getSubscriptionVideos = asyncHandler(async (req, res) => {
+    const { user } = req;
+    let { page = 1, limit = 10 } = req.query;
+    console.log(req.query, "Sometifhfskdfjsdlksdf ")
+    page = parseInt(page, 10) || 1;
+    limit = parseInt(limit, 10) || 10;
+
+    const pipeline = [
+        {
+            '$match': {
+                'subscriber': new mongoose.Types.ObjectId(user._id)
+            }
+        }, {
+            '$lookup': {
+                'from': 'videos',
+                'localField': 'channel',
+                'foreignField': 'owner',
+                'as': 'channelVideos'
+            }
+        }, {
+            '$unwind': '$channelVideos'
+        }, {
+            '$replaceRoot': {
+                'newRoot': '$channelVideos'
+            }
+        },
+        {
+            $lookup: {
+                'from': 'users',
+                'localField': 'owner',
+                'foreignField': '_id',
+                'as': 'videoOwner'
+            }
+        }, {
+            '$unwind': '$videoOwner'
+        }, {
+            '$project': {
+                '_id': 1,
+                'title': 1,
+                'views': 1,
+                'videoFile': 1,
+                'createdAt': 1,
+                'thumbnail': 1,
+                'ownerName': '$videoOwner.fullName',
+                'ownerId': '$videoOwner._id',
+                'ownerAvatar': '$videoOwner.avatar'
+            }
+        },
+        {
+            $skip: (page - 1) * limit
+        },
+        {
+            $limit: limit
+        }
+    ];
+
+    const filteredPipeline = pipeline.filter(Boolean);
+    const videos = await Subscription.aggregate(filteredPipeline);
+
+    res.status(200).json(
+        new ApiResponse(200, videos, " Subscribed Videos fetched successfully")
+    );
+
 });
 
 const getAllVideosCount = asyncHandler(async (req, res) => {
@@ -311,5 +376,6 @@ export {
     updateVideo,
     deleteVideo,
     togglePublishStatus,
-    getAllVideosCount
+    getAllVideosCount,
+    getSubscriptionVideos
 }
