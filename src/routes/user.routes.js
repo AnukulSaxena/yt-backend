@@ -17,7 +17,6 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   updateUserValidator,
   userChangeCurrentPasswordValidator,
-  userLoginValidator,
   userRegisterValidator,
 } from "../validators/auth/user.validators.js";
 import { validate } from "../validators/validate.js";
@@ -40,7 +39,7 @@ router.route("/register").post(
   registerUser
 );
 
-router.route("/login").post(userLoginValidator, validate, loginUser);
+router.route("/login").post(loginUser);
 
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);

@@ -1,4 +1,4 @@
-import { param } from "express-validator";
+import { param, query } from "express-validator";
 
 const singleParamValidator = (item) => {
   return [
@@ -8,5 +8,7 @@ const singleParamValidator = (item) => {
       .withMessage(item + " is Required"),
   ];
 };
+
+const singleOptionalQueryValidator = (item) => {};
 
 export { singleParamValidator };

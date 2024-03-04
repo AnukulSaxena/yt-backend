@@ -21,14 +21,6 @@ const userRegisterValidator = () => {
   ];
 };
 
-const userLoginValidator = () => {
-  return [
-    body("email").optional().trim().isEmail().withMessage("Email is invalid"),
-    body("username").optional().trim(),
-    body("password").notEmpty().withMessage("Password is required"),
-  ];
-};
-
 const userChangeCurrentPasswordValidator = () => {
   return [
     body("oldPassword").notEmpty().withMessage("Old password is required"),
@@ -45,7 +37,6 @@ const updateUserValidator = () => {
 
 export {
   userRegisterValidator,
-  userLoginValidator,
   userChangeCurrentPasswordValidator,
   updateUserValidator,
 };

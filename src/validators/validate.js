@@ -12,6 +12,7 @@ import { ApiError } from "../utils/ApiError.js";
  *
  */
 export const validate = (req, res, next) => {
+  console.log("init");
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     return next();
