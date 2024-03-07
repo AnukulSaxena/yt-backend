@@ -14,7 +14,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
   }
 
   let message = "";
-  const subscription = await Subscription.findOneAndDelete({
+  let subscription = await Subscription.findOneAndDelete({
     subscriber: user._id,
     channel: channelId,
   });
