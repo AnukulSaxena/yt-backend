@@ -69,13 +69,15 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   const userCreated = await User.findById(user._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken",
   );
 
   if (!userCreated) {
     throw new ApiError(500, "Something went wrong while user creation");
   }
-  res.status(201).json(new ApiResponse(200, {}, "User created Successfully"));
+  res
+    .status(201)
+    .json(new ApiResponse(200, userCreated, "User created Successfully"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -100,11 +102,11 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const { refreshToken, accessToken } = await generateAccessAndRefreshToken(
-    user._id
+    user._id,
   );
 
   const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken",
   );
 
   const options = {
@@ -124,8 +126,8 @@ const loginUser = asyncHandler(async (req, res) => {
           accessToken,
           refreshToken,
         },
-        "User logged in successfully"
-      )
+        "User logged in successfully",
+      ),
     );
 });
 
@@ -139,7 +141,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-    }
+    },
   );
 
   const options = {
@@ -165,7 +167,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   try {
     const decodedToken = jwt.verify(
       incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET
+      process.env.REFRESH_TOKEN_SECRET,
     );
 
     const user = await User.findById(decodedToken?._id);
@@ -184,7 +186,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     };
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      user._id
+      user._id,
     );
 
     res
@@ -195,8 +197,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { accessToken, refreshToken: refreshToken },
-          "Access token refreshed"
-        )
+          "Access token refreshed",
+        ),
       );
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid refresh token");
@@ -239,7 +241,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         email: email,
       },
     },
-    { new: true }
+    { new: true },
   ).select("-password -refreshToken");
 
   return res
@@ -269,7 +271,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         avatar: avatar.url,
       },
     },
-    { new: true }
+    { new: true },
   ).select("-password -refreshToken");
 
   res
@@ -301,7 +303,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         coverImage: coverImage.url,
       },
     },
-    { new: true }
+    { new: true },
   ).select("-password -refreshToken");
 
   return res
@@ -372,7 +374,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, channel[0], "User channel fetched successfully")
+      new ApiResponse(200, channel[0], "User channel fetched successfully"),
     );
 });
 
@@ -425,8 +427,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         user[0].watchHistory,
-        "Watch history fetched successfully"
-      )
+        "Watch history fetched successfully",
+      ),
     );
 });
 
