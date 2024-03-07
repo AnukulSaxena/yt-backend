@@ -1,17 +1,35 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
-    createTweet,
-    deleteTweet,
-    getUserTweets,
-    updateTweet,
-} from "../controllers/tweet.controller.js"
-import { verifyJWT } from "../middlewares/auth.middleware.js"
+  singleBodyValidator,
+  singleParamValidator,
+} from "../validators/single/single.validators.js";
+import { validate } from "../validators/validate.js";
+import { mongoIdPathVariableValidator } from "../validators/common/mongodb.validators.js";
+import {
+  createTweet,
+  deleteTweet,
+  getUserTweets,
+  updateTweet,
+} from "../controllers/tweet.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+router.use(verifyJWT);
 
-router.route("/").post(createTweet);
-router.route("/user/:userId").get(getUserTweets);
-router.route("/:tweetId").patch(updateTweet).delete(deleteTweet);
+router.route("/").post(singleBodyValidator("content"), validate, createTweet);
 
-export default router
+router
+  .route("/user/:userId")
+  .get(mongoIdPathVariableValidator("userId"), validate, getUserTweets);
+
+router
+  .route("/:tweetId")
+  .patch(
+    mongoIdPathVariableValidator("tweetId"),
+    singleBodyValidator("content"),
+    validate,
+    updateTweet
+  )
+  .delete(mongoIdPathVariableValidator("tweetId"), validate, deleteTweet);
+
+export default router;
