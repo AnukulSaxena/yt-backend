@@ -1,4 +1,4 @@
-import { param, query } from "express-validator";
+import { body, param, query } from "express-validator";
 
 const singleParamValidator = (item) => {
   return [
@@ -9,6 +9,22 @@ const singleParamValidator = (item) => {
   ];
 };
 
-const singleOptionalQueryValidator = (item) => {};
+const singleQueryValidator = (item) => {
+  return [
+    query(item)
+      .trim()
+      .notEmpty()
+      .withMessage(item + " is Required"),
+  ];
+};
 
-export { singleParamValidator };
+const singleBodyValidator = (item) => {
+  return [
+    body(item)
+      .trim()
+      .notEmpty()
+      .withMessage(item + " is Required"),
+  ];
+};
+
+export { singleParamValidator, singleBodyValidator, singleQueryValidator };

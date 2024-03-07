@@ -7,7 +7,11 @@ import { body, param, query } from "express-validator";
  */
 export const mongoIdPathVariableValidator = (idName) => {
   return [
-    param(idName).notEmpty().isMongoId().withMessage(`Invalid ${idName}`),
+    param(idName)
+      .trim()
+      .notEmpty()
+      .isMongoId()
+      .withMessage(`Invalid ${idName}`),
   ];
 };
 
@@ -23,5 +27,11 @@ export const mongoIdRequestBodyValidator = (idName) => {
 export const mongoIdOptionalQueryValidator = (idName) => {
   return [
     query(idName).optional().isMongoId().withMessage(`Invalid ${idName}`),
+  ];
+};
+
+export const mongoIdQueryValidator = (idName) => {
+  return [
+    query(idName).notEmpty().isMongoId().withMessage(`Invalid ${idName}`),
   ];
 };
