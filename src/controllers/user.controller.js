@@ -25,12 +25,12 @@ const generateAccessAndRefreshToken = async (user_id) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
+  const { email, username, fullName, password } = req.body;
   const existedUser = await User.findOne({
     $or: [{ email }, { username }],
   });
 
   if (existedUser) {
-    console.log(existedUser);
     throw new ApiError(409, "User with email or username already existed");
   }
 
@@ -80,12 +80,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
-  console.log(req.body);
 
   if (!username && !email) {
     throw new ApiError(400, "Username or email is required");
   }
-  console.log("User Logged in", username, email);
 
   const user = await User.findOne({
     $or: [{ username }, { email }],
@@ -113,7 +111,6 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
-  console.log("response");
 
   res
     .status(200)
@@ -133,13 +130,11 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  console.log(req.user);
-
   await User.findByIdAndUpdate(
     req.user._id,
     {
       $unset: {
-        refreshToken: 1, // this removes the field from document
+        refreshToken: 1,
       },
     },
     {
@@ -157,14 +152,13 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged Out"));
-  // res.status(200).json(new ApiResponse(200, {}, "got it"))
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
 
-  if (!incomingRefreshToken) {
+  if (!incomingRefreshToken || incomingRefreshToken === "undefined") {
     throw new ApiError(401, "unauthorized request");
   }
 
@@ -189,17 +183,18 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    const { accessToken, newRefreshToken } =
-      await generateAccessAndRefreshToken(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
 
     res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken: newRefreshToken },
+          { accessToken, refreshToken: refreshToken },
           "Access token refreshed"
         )
       );
@@ -253,7 +248,6 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
-  // console.log(" UserControlle :: updateUserAv :: req.user", req.user)
   const avatarLocalPath = req.file?.path;
 
   if (!avatarLocalPath || !req.files?.avatar[0]?.mimetype.includes("image")) {
